@@ -1,0 +1,57 @@
+DAX
+-----
+
+Table name : Cust_details
+
+1) AgeGroup Column : To group age 
+
+AgeGroup = SWITCH(TRUE(),
+ 'cust_detail'[Customer_Age] <30, "20-30", 'cust_detail'[Customer_Age] >= 30 &&  cust_detail[Customer_Age] < 40, "30-40",
+ 'cust_detail'[Customer_Age] >= 40 &&  cust_detail[Customer_Age] < 50, "40-50",
+ 'cust_detail'[Customer_Age] >= 50 &&  cust_detail[Customer_Age] < 60, "50-60",
+ 'cust_detail'[Customer_Age] >=60, "60+",
+  "Unknown"
+) 
+
+2) IncomeGroup column 
+
+IncomeGroup = SWITCH(
+     TRUE(),
+     'cust_detail'[Income] < 35000, "Low",
+     'cust_detail'[Income] >= 35000 && 'cust_detail'[Income] < 70000, "Medium",
+     'cust_detail'[Income] >= 70000, "High",
+     "Unknown"
+     )
+
+
+Table Name : cc_detials
+
+
+1) Revenue column
+
+Revenue = 'cc_details'[Annual_Fees] + 'cc_details'[Total_Trans_Amt] + 'cc_details'[Interest_Earned]
+
+2) WEEK NUM2
+
+Week_Num2 = WEEKNUM( 'cc_details'[Week_Start_Date])
+
+
+Measures
+--------
+
+Table name : cc_details
+
+1) Current_Week_Revenue = CALCULATE( 
+    SUM(cc_details[Revenue]),
+    FILTER(
+        ALL('cc_details'),
+        'cc_details'[Week_Num2] = MAX('cc_details'[Week_Num2])))
+
+
+2) Previous_Week_Revenue = CALCULATE( 
+    SUM(cc_details[Revenue]),
+    FILTER(
+        ALL('cc_details'),
+        'cc_details'[Week_Num2] = MAX('cc_details'[Week_Num2])-1 ))
+
+3) Wow_Revenue = DIVIDE(([Current_Week_Revenue] - [Previous_Week_Revenue]), [Previous_Week_Revenue])
